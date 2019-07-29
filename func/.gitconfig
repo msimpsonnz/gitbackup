@@ -1,0 +1,3 @@
+[credential]
+    helper = /var/task/credential-helper.py
+    UseHttpPath = true

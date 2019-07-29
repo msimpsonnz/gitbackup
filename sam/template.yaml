@@ -1,0 +1,13 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  GitBackup:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handler.run
+      Runtime: python3.6
+      Events:
+        GitBackupScheduledEvent:
+          Type: Schedule
+          Properties:
+            Schedule: rate(1 week)
