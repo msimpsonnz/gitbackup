@@ -2,7 +2,6 @@ import os
 import requests
 from git import Repo
 import boto3
-import subprocess
 import shutil
 
 client = boto3.client('codecommit')
@@ -23,28 +22,6 @@ def clone(repoName):
     print('Created remote')
     remote.push(refspec='master:master')
     print('Pushed to master')
-
-def cloneV2(repoName):
-    localDir=f'/tmp/{repoName}'
-    try:
-        shutil.rmtree(localDir)
-    except:
-        pass
-    repoUrl = f"https://github.com/msimpsonnz/{repoName}.git"
-    localRepo = Repo.clone_from(repoUrl, localDir)
-    print(f'Cloned repo: {repoName}')
-    remoteRepo = getOrMakeRepo(repoName)
-    remoteRepoUrl = remoteRepo['cloneUrlHttp']
-    # print("Created remote repo")
-    # remote = localRepo.create_remote(name=remoteRepo['repositoryName'], url=remoteRepo['cloneUrlHttp'])
-    # print('Created remote')
-    # remote.push(refspec='master:master')
-    # print('Pushed to master')
-    os.system('git config --list')
-    os.chdir(localDir)
-    os.system(f'git clone {repoUrl}')
-    os.system(f'git remote add ccRepo {remoteRepoUrl}')
-    os.system('git push ccRepo master')
 
 def getOrMakeRepo(repoName):
     try:
@@ -67,4 +44,4 @@ def run(event, context):
     #Run over each repo
     for repoName in repoList["repos"]:
         print(repoName)
-        cloneV2(repoName)
+        clone(repoName)

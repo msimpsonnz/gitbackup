@@ -1,14 +1,50 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Transform: AWS::Serverless-2016-10-31
+Parameters:
+  LayerAWSCLI:
+    Type: String
+  NotificationEmail:
+    Type: String
 Resources:
-  GitBackup:
-    Type: AWS::Serverless::Function
+  Alarm:
     Properties:
-      Handler: handler.run
-      Runtime: python3.6
+      AlarmActions:
+      - Ref: AlarmTopic
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      Dimensions:
+      - Name: FunctionName
+        Value:
+          Ref: GitBackup
+      EvaluationPeriods: 1
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Period: 60
+      Statistic: Sum
+      Threshold: '1'
+    Type: AWS::CloudWatch::Alarm
+  AlarmTopic:
+    Properties:
+      Subscription:
+      - Endpoint:
+          Ref: NotificationEmail
+        Protocol: email
+    Type: AWS::SNS::Topic
+  GitBackup:
+    Properties:
+      CodeUri: s3://mjs-personal-s3/cbc2c49600dd90bd970fc19c4dbd1f62
       Events:
         GitBackupScheduledEvent:
-          Type: Schedule
           Properties:
-            Schedule: rate(1 week)
-      CodeUri: s3://mjs-personal-s3/4d28b1b49084a3fb9a211ea41e52a909
+            Schedule: cron(0 18 ? * FRI *)
+          Type: Schedule
+      FunctionName: git-backup
+      Handler: handler.run
+      Layers:
+      - arn:aws:lambda:ap-southeast-2:553035198032:layer:git:5
+      - Ref: LayerAWSCLI
+      MemorySize: 1024
+      Policies:
+      - AWSCodeCommitPowerUser
+      Runtime: python3.7
+      Timeout: 300
+    Type: AWS::Serverless::Function
+Transform: AWS::Serverless-2016-10-31
