@@ -1,5 +1,6 @@
 {
     "repos": [
+        "gitbackup",
         "misc",
         "aws-misc",
         "msft-misc",
