@@ -1,5 +1,9 @@
 {
     "repos": [
-        "misc"
+        "misc",
+        "aws-misc",
+        "msft-misc",
+        "cdk-ci-cd",
+        "msimpsonnz.github.io"
     ]
 }
