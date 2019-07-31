@@ -6,6 +6,8 @@ import shutil
 
 client = boto3.client('codecommit')
 os.environ['HOME'] = '/var/task'
+gitHubRepo = os.environ['GITHUB_REPO'])
+gitHubRepoList = os.environ['GITHUB_REPO_LIST'])
 
 def clone(repoName):
     localDir=f'/tmp/{repoName}'
@@ -13,7 +15,7 @@ def clone(repoName):
         shutil.rmtree(localDir)
     except:
         pass
-    repoUrl = f"https://github.com/msimpsonnz/{repoName}.git"
+    repoUrl = f"{gitHubRepo}/{repoName}.git"
     localRepo = Repo.clone_from(repoUrl, localDir)
     print(f'Cloned repo: {repoName}')
     remoteRepo = getOrMakeRepo(repoName)
@@ -36,11 +38,8 @@ def getOrMakeRepo(repoName):
     return ccRepo['repositoryMetadata']
 
 def run(event, context):
-    #Get a list of repos
-    repoUrl = requests.get('https://raw.githubusercontent.com/msimpsonnz/gitbackup/master/repo.json')
-    #Parse JSON
-    repoList = repoUrl.json()
-
+    #Get a list of repos as JSON
+    repoList = requests.get(gitHubRepoList).json()
     #Run over each repo
     for repoName in repoList["repos"]:
         print(repoName)

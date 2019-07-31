@@ -1,6 +1,10 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Parameters:
+  GITHUB_REPO:
+    Type: String
+  GITHUB_REPO_LIST:
+    Type: String
   NotificationEmail:
     Type: String
   LayerAWSCLI:
@@ -20,6 +24,10 @@ Resources:
       Layers:
         - arn:aws:lambda:ap-southeast-2:553035198032:layer:git:5
         - !Ref LayerAWSCLI
+          Environment:
+      Variables:
+        GITHUB_REPO: !Ref GITHUB_REPO
+        GITHUB_REPO_LIST: !Ref GITHUB_REPO_LIST
       Events:
         GitBackupScheduledEvent:
           Type: Schedule

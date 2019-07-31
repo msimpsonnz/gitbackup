@@ -1,8 +1,8 @@
 #!/bin/bash
-read -p 'Email: ' EMAIL
-echo $EMAIL
-read -p 'LayerAWSCLI: ' LayerAWSCLI
-echo $LayerAWSCLI
+export GITHUB_REPO='https://github.com/<Your Github Account>'
+export GITHUB_REPO_LIST='https://github.com/<Your Github Account>'
+export EMAIL='<Your Email for Notification>'
+export LayerAWSCLI='<AWS CLI Layer ARN from above>'
 
 cd ./sam
 sam build --base-dir ../func --parameter-overrides ParameterKey=LayerAWSCLI,ParameterValue=$LayerAWSCLI
