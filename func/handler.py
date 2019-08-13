@@ -10,7 +10,7 @@ gitHubRepo = os.environ['GITHUB_REPO']
 gitHubRepoList = os.environ['GITHUB_REPO_LIST']
 
 def clone(repoName):
-    
+
     localDir=f'/tmp/{repoName}'
     try:
         shutil.rmtree(localDir)
@@ -39,9 +39,15 @@ def getOrMakeRepo(repoName):
     return ccRepo['repositoryMetadata']
 
 def run(event, context):
-    #Get a list of repos as JSON
-    repoList = requests.get(gitHubRepoList).json()
-    #Run over each repo
-    for repoName in repoList["repos"]:
+    print(event)
+    if event.get('repository') != None:
+        repoName = event['repository']['name']
         print(repoName)
         clone(repoName)
+    else:
+        #Get a list of repos as JSON
+        repoList = requests.get(gitHubRepoList).json()
+        #Run over each repo
+        for repoName in repoList["repos"]:
+            print(repoName)
+            clone(repoName)

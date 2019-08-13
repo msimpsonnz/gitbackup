@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@aws-cdk/aws-apigateway": "^1.3.0",
+    "@aws-cdk/aws-events-targets": "^1.3.0",
     "@aws-cdk/aws-lambda": "^1.3.0",
     "@aws-cdk/aws-sam": "^1.3.0",
     "@aws-cdk/aws-stepfunctions": "^1.3.0",

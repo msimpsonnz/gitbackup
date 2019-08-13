@@ -1,6 +1,8 @@
 import cdk = require('@aws-cdk/core');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
+import events = require('@aws-cdk/aws-events');
+import targets = require('@aws-cdk/aws-events-targets');
 import sfn = require('@aws-cdk/aws-stepfunctions');
 import tasks = require('@aws-cdk/aws-stepfunctions-tasks');
 import { Duration } from '@aws-cdk/core';
@@ -44,6 +46,7 @@ export class CdkStack extends cdk.Stack {
       runtime: lambda.Runtime.PYTHON_3_7,
       handler: 'handler.run',
       code: lambda.Code.asset('../func/function.zip'),
+      memorySize: 512,
       timeout: Duration.seconds(300),
       environment: {
         GITHUB_REPO: _GITHUB_REPO,
@@ -55,6 +58,14 @@ export class CdkStack extends cdk.Stack {
       lambda.LayerVersion.fromLayerVersionArn(this, 'cliLayerVersion', layerVersionArn),
       lambda.LayerVersion.fromLayerVersionArn(this, 'gitLayerVersion', GIT_LAYER_ARN),
     );
+
+    const rule = new events.Rule(this, 'Rule', {
+      schedule: {
+        expressionString: 'cron(0 18 ? * FRI *)'
+      }
+    });
+
+    rule.addTarget(new targets.LambdaFunction(lambdaFn));
 
 
     const submitJob = new sfn.Task(this, 'Submit Job', {
