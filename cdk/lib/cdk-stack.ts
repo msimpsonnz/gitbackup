@@ -67,20 +67,24 @@ export class CdkStack extends cdk.Stack {
 
     rule.addTarget(new targets.LambdaFunction(lambdaFn));
 
-
+    //Create new Step Function Task
     const submitJob = new sfn.Task(this, 'Submit Job', {
+        //This task invokes out Lambda function
         task: new tasks.InvokeFunction(lambdaFn),
-        // Put Lambda's result here in the execution's state object
         resultPath: '$.guid',
     });
     
+    //Create the State Machine for the Step Function
     const state = new sfn.StateMachine(this, 'StateMachine', {
       stateMachineName: "gitbackup-sfn",
+      //Provide the job definition from above
       definition: submitJob,
       timeout: Duration.minutes(5)
     });
 
+    //Give Step Function IAM Role permission to invoke Lambda
     lambdaFn.grantInvoke(state.role);
+    //Give API Gateway IAM Role permission to execute Step Function
     state.grantStartExecution(apiGatewayRole);
   
     //Create an empty response model for API Gateway
@@ -106,9 +110,6 @@ export class CdkStack extends cdk.Stack {
     //Create integration options for API Method
     var integrationOptions :IntegrationOptions = {
       credentialsRole: apiGatewayRole,
-      // requestParameters: {
-      //   'integration.request.header.Content-Type': "'application/x-www-form-urlencoded'"
-      // },
       requestTemplates: {
         'application/json': JSON.stringify({
           input: '$util.escapeJavaScript($input.body)',
@@ -120,11 +121,10 @@ export class CdkStack extends cdk.Stack {
       ]
     };
     
-    //Create the SQS Integration
+    //Create the Step Function Integration
     const apiGatewayIntegration = new api.AwsIntegration({ 
       service: "states",
       action: "StartExecution",
-      //path: state.stateMachineArn,
       integrationHttpMethod: "POST",
       options: integrationOptions,
     });
