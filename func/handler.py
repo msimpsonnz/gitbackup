@@ -6,10 +6,11 @@ import shutil
 
 client = boto3.client('codecommit')
 os.environ['HOME'] = '/var/task'
-gitHubRepo = os.environ['GITHUB_REPO'])
-gitHubRepoList = os.environ['GITHUB_REPO_LIST'])
+gitHubRepo = os.environ['GITHUB_REPO']
+gitHubRepoList = os.environ['GITHUB_REPO_LIST']
 
 def clone(repoName):
+    
     localDir=f'/tmp/{repoName}'
     try:
         shutil.rmtree(localDir)
